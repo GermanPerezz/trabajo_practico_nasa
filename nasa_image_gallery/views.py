@@ -30,9 +30,23 @@ def home(request):
 def search(request):
     images, favourite_list = getAllImagesAndFavouriteList(request)
     search_msg = request.POST.get('query', '')
-
+    search_msg = search_msg.lower()
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
-    pass
+    if search_msg == "" :
+        return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list})
+    else :
+        images_by_msg = []
+        for image in images :
+            exists = stringExists(search_msg,image)
+            if exists :
+                images_by_msg.append(image)
+        return render(request, 'home.html', {'images': images_by_msg, 'favourite_list': favourite_list})
+
+
+def stringExists(text,object) :
+    if text in object.title.lower() :
+        return True
+    return False
 
 
 # las siguientes funciones se utilizan para implementar la sección de favoritos: traer los favoritos de un usuario, guardarlos, eliminarlos y desloguearse de la app.
